@@ -1,0 +1,324 @@
+<!-- Advanced Filters Component -->
+<div class="card">
+  <div class="card-content">
+    <span class="card-title">
+      <i class="material-icons left">filter_list</i>
+      Filter Stations
+    </span>
+
+    <div class="row">
+      <!-- Connector Types -->
+      <div class="col s12">
+        <h6>Connector Types</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="ccs"
+              />
+              <span>CCS</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="chademo"
+              />
+              <span>CHAdeMO</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="type2"
+              />
+              <span>Type 2</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="tesla"
+              />
+              <span>Tesla</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+      <!-- Power Rating -->
+      <div class="col s12">
+        <h6>Charging Speed</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="ultra-fast"
+              />
+              <span>Ultra Fast (150+ kW)</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="fast"
+              />
+              <span>Fast (50-150 kW)</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="standard"
+              />
+              <span>Standard (7-50 kW)</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="slow"
+              />
+              <span>Slow (< 7 kW)</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+      <!-- Availability -->
+      <div class="col s12">
+        <h6>Availability</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="available"
+                checked
+              />
+              <span>Available Now</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="busy"
+              />
+              <span>Busy</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="offline"
+              />
+              <span>Offline</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+      <!-- Networks -->
+      <div class="col s12">
+        <h6>Charging Networks</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="network-chargeco"
+              />
+              <span>ChargeCo</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="network-evgo"
+              />
+              <span>EVgo</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="network-tesla"
+              />
+              <span>Tesla</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="network-chargepoint"
+              />
+              <span>ChargePoint</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+      <!-- Amenities -->
+      <div class="col s12">
+        <h6>Amenities</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="restroom"
+              />
+              <span>Restroom</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="food"
+              />
+              <span>Food & Beverages</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="wifi"
+              />
+              <span>Free WiFi</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="shopping"
+              />
+              <span>Shopping</span>
+            </label>
+          </p>
+        </div>
+      </div>
+
+      <!-- Payment Options -->
+      <div class="col s12">
+        <h6>Payment Options</h6>
+        <div class="filter-section">
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="credit-card"
+              />
+              <span>Credit Card</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="app-payment"
+              />
+              <span>In-App Payment</span>
+            </label>
+          </p>
+          <p>
+            <label>
+              <input
+                type="checkbox"
+                class="filled-in filter-checkbox"
+                data-filter="free"
+              />
+              <span>Free Charging</span>
+            </label>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-action">
+    <button class="btn-flat waves-effect" id="reset-filters">Reset All</button>
+    <button
+      class="btn waves-effect waves-light primary-color right"
+      id="apply-filters"
+    >
+      Apply Filters
+    </button>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Reset filters button
+    const resetButton = document.getElementById("reset-filters");
+    if (resetButton) {
+      resetButton.addEventListener("click", function () {
+        document.querySelectorAll(".filter-checkbox").forEach((checkbox) => {
+          checkbox.checked = false;
+        });
+      });
+    }
+
+    // Apply filters button
+    const applyButton = document.getElementById("apply-filters");
+    if (applyButton) {
+      applyButton.addEventListener("click", function () {
+        const activeFilters = [];
+        document
+          .querySelectorAll(".filter-checkbox:checked")
+          .forEach((checkbox) => {
+            activeFilters.push(checkbox.getAttribute("data-filter"));
+          });
+
+        // If map.js is loaded, apply filters to map
+        if (typeof applyMapFilters === "function") {
+          applyMapFilters(activeFilters);
+        } else {
+          console.log("Active filters:", activeFilters);
+        }
+
+        // Close the side filter panel if on mobile
+        const filterPanel = document.querySelector(".sidenav");
+        if (filterPanel && M.Sidenav.getInstance(filterPanel)) {
+          M.Sidenav.getInstance(filterPanel).close();
+        }
+      });
+    }
+  });
+</script>

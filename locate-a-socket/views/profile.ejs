@@ -1,0 +1,380 @@
+<%- include('./partials/header') %>
+
+<!-- Profile Section -->
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <h3>My Profile</h3>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- User Profile Card -->
+      <div class="col s12 m4">
+        <div class="card">
+          <div class="card-content center-align">
+            <img
+              src="https://via.placeholder.com/150"
+              alt="User Avatar"
+              class="circle responsive-img"
+            />
+            <span class="card-title">Jane Smith</span>
+            <p>EV Driver since January 2024</p>
+            <p>
+              <i class="material-icons tiny">email</i> jane.smith@example.com
+            </p>
+            <p class="primary-color-text">
+              <i class="material-icons tiny">verified_user</i> Verified Account
+            </p>
+          </div>
+          <div class="card-action center-align">
+            <a
+              href="#edit-profile-modal"
+              class="btn waves-effect waves-light primary-color modal-trigger"
+            >
+              <i class="material-icons left">edit</i>Edit Profile
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vehicle Information -->
+      <div class="col s12 m8">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">My Vehicles</span>
+            <ul class="collection">
+              <!-- Vehicle 1 -->
+              <li class="collection-item avatar">
+                <i class="material-icons circle primary-color"
+                  >directions_car</i
+                >
+                <span class="title"><strong>Tesla Model 3</strong></span>
+                <p>
+                  Range: 345 km<br />
+                  Connector: Tesla/CCS
+                </p>
+                <div class="secondary-content">
+                  <a
+                    href="#edit-vehicle-modal-1"
+                    class="btn-floating btn-small waves-effect waves-light secondary-color modal-trigger"
+                  >
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
+              </li>
+              <!-- Vehicle 2 -->
+              <li class="collection-item avatar">
+                <i class="material-icons circle secondary-color"
+                  >directions_car</i
+                >
+                <span class="title"><strong>Nissan Leaf</strong></span>
+                <p>
+                  Range: 240 km<br />
+                  Connector: CHAdeMO
+                </p>
+                <div class="secondary-content">
+                  <a
+                    href="#edit-vehicle-modal-2"
+                    class="btn-floating btn-small waves-effect waves-light secondary-color modal-trigger"
+                  >
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
+              </li>
+            </ul>
+            <div class="card-action">
+              <a
+                href="#add-vehicle-modal"
+                class="btn-floating waves-effect waves-light primary-color modal-trigger tooltipped"
+                data-position="top"
+                data-tooltip="Add Vehicle"
+              >
+                <i class="material-icons">add</i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activities Section -->
+    <div class="row">
+      <!-- Favorites -->
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Favorite Stations</span>
+            <ul class="collection">
+              <li class="collection-item avatar">
+                <i class="material-icons circle green">ev_station</i>
+                <span class="title"
+                  ><strong>Central City Charging</strong></span
+                >
+                <p>Last visited: 2 days ago</p>
+              </li>
+              <li class="collection-item avatar">
+                <i class="material-icons circle green">ev_station</i>
+                <span class="title"
+                  ><strong>North District Superchargers</strong></span
+                >
+                <p>Last visited: 1 week ago</p>
+              </li>
+              <li class="collection-item avatar">
+                <i class="material-icons circle green">ev_station</i>
+                <span class="title"
+                  ><strong>South Plaza Charging Hub</strong></span
+                >
+                <p>Last visited: 3 weeks ago</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="col s12 m6">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Recent Activity</span>
+            <ul class="collection">
+              <li class="collection-item avatar">
+                <i class="material-icons circle blue">history</i>
+                <span class="title"
+                  ><strong>Charged at Central City</strong></span
+                >
+                <p>
+                  March 22, 2025<br />
+                  23 kWh · $8.05
+                </p>
+              </li>
+              <li class="collection-item avatar">
+                <i class="material-icons circle blue">history</i>
+                <span class="title"
+                  ><strong>Charged at North District</strong></span
+                >
+                <p>
+                  March 18, 2025<br />
+                  31 kWh · $10.85
+                </p>
+              </li>
+              <li class="collection-item avatar">
+                <i class="material-icons circle blue">history</i>
+                <span class="title"
+                  ><strong>Route planned: City to Mountains</strong></span
+                >
+                <p>
+                  March 15, 2025<br />
+                  178 km · 2 charging stops
+                </p>
+              </li>
+            </ul>
+            <div class="card-action">
+              <a href="#!">View All Activity</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Methods -->
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Payment Methods</span>
+            <ul class="collection">
+              <li class="collection-item avatar">
+                <i class="material-icons circle red">credit_card</i>
+                <span class="title"><strong>Visa ending in 4321</strong></span>
+                <p>
+                  Expires: 05/27<br />
+                  Default payment method
+                </p>
+                <div class="secondary-content">
+                  <a
+                    href="#edit-payment-modal-1"
+                    class="btn-floating btn-small waves-effect waves-light secondary-color modal-trigger"
+                  >
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
+              </li>
+              <li class="collection-item avatar">
+                <i class="material-icons circle blue">account_balance</i>
+                <span class="title"><strong>PayPal</strong></span>
+                <p>jane.smith@example.com</p>
+                <div class="secondary-content">
+                  <a
+                    href="#edit-payment-modal-2"
+                    class="btn-floating btn-small waves-effect waves-light secondary-color modal-trigger"
+                  >
+                    <i class="material-icons">edit</i>
+                  </a>
+                </div>
+              </li>
+            </ul>
+            <div class="card-action">
+              <a
+                href="#add-payment-modal"
+                class="btn waves-effect waves-light primary-color modal-trigger"
+              >
+                <i class="material-icons left">add</i>Add Payment Method
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Edit Profile Modal -->
+<div id="edit-profile-modal" class="modal">
+  <div class="modal-content">
+    <h4>Edit Profile</h4>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <input id="first_name" type="text" class="validate" value="Jane" />
+            <label for="first_name" class="active">First Name</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="last_name" type="text" class="validate" value="Smith" />
+            <label for="last_name" class="active">Last Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input
+              id="email"
+              type="email"
+              class="validate"
+              value="jane.smith@example.com"
+            />
+            <label for="email" class="active">Email</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input
+              id="phone"
+              type="tel"
+              class="validate"
+              value="(555) 123-4567"
+            />
+            <label for="phone" class="active">Phone Number</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <label>Notification Preferences</label>
+            <p>
+              <label>
+                <input type="checkbox" checked />
+                <span>Email notifications</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input type="checkbox" checked />
+                <span>Push notifications</span>
+              </label>
+            </p>
+            <p>
+              <label>
+                <input type="checkbox" />
+                <span>SMS notifications</span>
+              </label>
+            </p>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-light btn-flat"
+      >Cancel</a
+    >
+    <a href="#!" class="waves-effect waves-light btn primary-color"
+      >Save Changes</a
+    >
+  </div>
+</div>
+
+<!-- Add Vehicle Modal -->
+<div id="add-vehicle-modal" class="modal">
+  <div class="modal-content">
+    <h4>Add Vehicle</h4>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s12 m6">
+            <select id="vehicle_make">
+              <option value="" disabled selected>Choose manufacturer</option>
+              <option value="tesla">Tesla</option>
+              <option value="nissan">Nissan</option>
+              <option value="chevrolet">Chevrolet</option>
+              <option value="ford">Ford</option>
+              <option value="audi">Audi</option>
+              <option value="bmw">BMW</option>
+              <option value="other">Other</option>
+            </select>
+            <label>Vehicle Make</label>
+          </div>
+          <div class="input-field col s12 m6">
+            <input id="vehicle_model" type="text" class="validate" />
+            <label for="vehicle_model">Model</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12 m6">
+            <input
+              id="vehicle_year"
+              type="number"
+              class="validate"
+              min="2000"
+              max="2025"
+            />
+            <label for="vehicle_year">Year</label>
+          </div>
+          <div class="input-field col s12 m6">
+            <input id="vehicle_range" type="number" class="validate" />
+            <label for="vehicle_range">Range (km)</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <select id="connector_type" multiple>
+              <option value="" disabled>Choose connector types</option>
+              <option value="ccs">CCS</option>
+              <option value="chademo">CHAdeMO</option>
+              <option value="type2">Type 2</option>
+              <option value="tesla">Tesla</option>
+              <option value="type1">Type 1 (J1772)</option>
+            </select>
+            <label>Connector Types</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="vehicle_nickname" type="text" class="validate" />
+            <label for="vehicle_nickname">Nickname (optional)</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-light btn-flat"
+      >Cancel</a
+    >
+    <a href="#!" class="waves-effect waves-light btn primary-color"
+      >Add Vehicle</a
+    >
+  </div>
+</div>
+
+<%- include('./partials/footer') %>

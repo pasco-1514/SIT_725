@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SIT725 Express Calculator</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      h1 {
+        color: #333;
+        text-align: center;
+      }
+      .calculator {
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+      }
+      .input-group {
+        margin-bottom: 15px;
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input,
+      select,
+      button {
+        padding: 8px;
+        border-radius: 4px;
+        border: 1px solid #ddd;
+      }
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        padding: 10px 15px;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      .result {
+        font-size: 18px;
+        font-weight: bold;
+        margin-top: 15px;
+      }
+      .url-example {
+        background-color: #e9e9e9;
+        padding: 10px;
+        border-radius: 5px;
+        font-family: monospace;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>SIT725 Express Calculator</h1>
+
+    <div class="calculator">
+      <h2>GET Method Calculator</h2>
+      <p>This calculator uses the GET method to add two numbers.</p>
+
+      <div class="input-group">
+        <label for="get-num1">First Number:</label>
+        <input type="number" id="get-num1" placeholder="Enter first number" />
+      </div>
+
+      <div class="input-group">
+        <label for="get-num2">Second Number:</label>
+        <input type="number" id="get-num2" placeholder="Enter second number" />
+      </div>
+
+      <button onclick="calculateUsingGet()">Add Numbers (GET)</button>
+
+      <div class="result" id="get-result"></div>
+
+      <div class="url-example" id="url-display"></div>
+    </div>
+
+    <div class="calculator">
+      <h2>POST Method Calculator</h2>
+      <p>This calculator uses the POST method to perform various operations.</p>
+
+      <div class="input-group">
+        <label for="post-num1">First Number:</label>
+        <input type="number" id="post-num1" placeholder="Enter first number" />
+      </div>
+
+      <div class="input-group">
+        <label for="post-num2">Second Number:</label>
+        <input type="number" id="post-num2" placeholder="Enter second number" />
+      </div>
+
+      <div class="input-group">
+        <label for="operation">Operation:</label>
+        <select id="operation">
+          <option value="add">Addition (+)</option>
+          <option value="subtract">Subtraction (-)</option>
+          <option value="multiply">Multiplication (×)</option>
+          <option value="divide">Division (÷)</option>
+        </select>
+      </div>
+
+      <button onclick="calculateUsingPost()">Calculate (POST)</button>
+
+      <div class="result" id="post-result"></div>
+    </div>
+
+    <script>
+      // Function to calculate using GET
+      function calculateUsingGet() {
+        const num1 = document.getElementById("get-num1").value;
+        const num2 = document.getElementById("get-num2").value;
+
+        if (!num1 || !num2) {
+          document.getElementById("get-result").textContent =
+            "Please enter both numbers";
+          return;
+        }
+
+        const url = `/api/add?num1=${num1}&num2=${num2}`;
+        document.getElementById("url-display").textContent = `URL: ${url}`;
+
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            document.getElementById(
+              "get-result"
+            ).textContent = `Result: ${data.result}`;
+          })
+          .catch((error) => {
+            document.getElementById(
+              "get-result"
+            ).textContent = `Error: ${error.message}`;
+          });
+      }
+
+      // Function to calculate using POST
+      function calculateUsingPost() {
+        const num1 = document.getElementById("post-num1").value;
+        const num2 = document.getElementById("post-num2").value;
+        const operation = document.getElementById("operation").value;
+
+        if (!num1 || !num2) {
+          document.getElementById("post-result").textContent =
+            "Please enter both numbers";
+          return;
+        }
+
+        fetch("/api/calculate", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ num1, num2, operation }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            let operationSymbol;
+            switch (operation) {
+              case "add":
+                operationSymbol = "+";
+                break;
+              case "subtract":
+                operationSymbol = "-";
+                break;
+              case "multiply":
+                operationSymbol = "×";
+                break;
+              case "divide":
+                operationSymbol = "÷";
+                break;
+            }
+            document.getElementById(
+              "post-result"
+            ).textContent = `${num1} ${operationSymbol} ${num2} = ${data.result}`;
+          })
+          .catch((error) => {
+            document.getElementById(
+              "post-result"
+            ).textContent = `Error: ${error.message}`;
+          });
+      }
+    </script>
+  </body>
+</html>

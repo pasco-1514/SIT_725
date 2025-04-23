@@ -1,0 +1,1077 @@
+<%- include('./partials/header', {title: 'Find Charging Stations'}) %>
+
+<div class="container">
+  <div class="row">
+    <div class="col s12">
+      <h4>Locate a Socket</h4>
+      <p class="flow-text">Find EV charging stations near you</p>
+    </div>
+  </div>
+
+  <!-- Search and Filter Row -->
+  <div class="row">
+    <div class="col s12 m8">
+      <div class="input-field">
+        <i class="material-icons prefix">search</i>
+        <input id="search_location" type="text" class="validate" />
+        <label for="search_location">Search for location</label>
+      </div>
+    </div>
+    <div class="col s6 m2">
+      <div class="input-field">
+        <select id="radius_select">
+          <option value="5">5 km</option>
+          <option value="10" selected>10 km</option>
+          <option value="20">20 km</option>
+          <option value="50">50 km</option>
+        </select>
+        <label>Radius</label>
+      </div>
+    </div>
+    <div class="col s6 m2">
+      <button
+        id="search-btn"
+        class="btn waves-effect waves-light"
+        style="margin-top: 1.5rem"
+      >
+        <i class="material-icons left">search</i>Search
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="row">
+    <div class="col s12">
+      <div class="chip filter-chip" data-filter="fast">
+        <i class="material-icons left">flash_on</i>Fast Charging
+      </div>
+      <div class="chip filter-chip" data-filter="free">
+        <i class="material-icons left">money_off</i>Free
+      </div>
+      <div class="chip filter-chip" data-filter="ccs">
+        <i class="material-icons left">ev_station</i>CCS
+      </div>
+      <div class="chip filter-chip" data-filter="chademo">
+        <i class="material-icons left">ev_station</i>CHAdeMO
+      </div>
+      <div class="chip filter-chip" data-filter="type2">
+        <i class="material-icons left">ev_station</i>Type 2
+      </div>
+      <div class="chip filter-chip" data-filter="available">
+        <i class="material-icons left">check_circle</i>Available Now
+      </div>
+    </div>
+  </div>
+
+  <!-- Map and Station List -->
+  <div class="row">
+    <!-- Map Container -->
+    <div class="col s12 m8">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title">Charging Stations Map</span>
+          <!-- This is the main map container -->
+          <div
+            id="leaflet-map"
+            style="height: 500px; width: 100%; border: 1px solid #ccc"
+          ></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Station List -->
+    <div class="col s12 m4">
+      <div class="card">
+        <div class="card-content">
+          <span class="card-title"
+            >Nearby Stations
+            <span id="station-count" class="badge">0</span></span
+          >
+          <ul class="collection" id="station-list">
+            <li class="collection-item center-align">
+              <div class="preloader-wrapper small active">
+                <div class="spinner-layer spinner-green-only">
+                  <div class="circle-clipper left">
+                    <div class="circle"></div>
+                  </div>
+                  <div class="gap-patch"><div class="circle"></div></div>
+                  <div class="circle-clipper right">
+                    <div class="circle"></div>
+                  </div>
+                </div>
+              </div>
+              <p>Loading stations...</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Custom CSS for map elements -->
+<style>
+  .user-location-marker {
+    z-index: 1000 !important;
+  }
+  .station-marker {
+    border-radius: 50%;
+  }
+  .filter-chip {
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .filter-chip.active {
+    background-color: #26a69a;
+    color: white;
+  }
+  .map-error-message {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+  }
+  .search-marker {
+    z-index: 900 !important;
+  }
+</style>
+
+<!-- Direct map script inline -->
+<script>
+  // Modify your window.onload function to save the map as a global variable
+  window.onload = function () {
+    console.log("Window fully loaded, initializing map now");
+
+    // Create map with a specific ID
+    const mapElement = document.getElementById("leaflet-map");
+    if (!mapElement) {
+      console.error("Map element not found!");
+      return;
+    }
+
+    console.log(
+      "Map dimensions:",
+      mapElement.offsetWidth,
+      "x",
+      mapElement.offsetHeight
+    );
+
+    // Create the map and make it globally accessible
+    window.map = L.map("leaflet-map", {
+      center: [37.7749, -122.4194],
+      zoom: 13,
+    });
+
+    // Add tile layer
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    }).addTo(window.map);
+
+    window.userMarker = L.marker([-37.8136, 144.9631], {
+      icon: L.divIcon({
+        className: "user-location-marker",
+        html: '<div style="background-color:#4285F4; border-radius:50%; width:20px; height:20px; border:3px solid white;"></div>',
+        iconSize: [20, 20],
+      }),
+    }).addTo(window.map);
+
+    // Also update this to Melbourne coordinates
+    window.userLocation = { lat: -37.8136, lng: 144.9631 };
+
+    // Try to get user's actual location
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const { latitude, longitude } = position.coords;
+          window.userLocation = { lat: latitude, lng: longitude };
+          window.userMarker.setLatLng([latitude, longitude]);
+          window.map.setView([latitude, longitude], 13);
+          fetchNearbyStations(latitude, longitude);
+        },
+        function (error) {
+          console.error("Geolocation error:", error);
+          fetchNearbyStations(-37.8136, 144.9631); // Fallback to Melbourne, Australia
+        }
+      );
+    } else {
+      fetchNearbyStations(37.7749, -122.4194);
+    }
+
+    // Force map to update its size
+    setTimeout(function () {
+      window.map.invalidateSize();
+      console.log("Map size refreshed");
+    }, 500);
+
+    // Set up event listeners
+    setupEventListeners();
+
+    /**
+     * Set up various event listeners
+     */
+    function setupEventListeners() {
+      // Filter chip click
+      document.querySelectorAll(".filter-chip").forEach((chip) => {
+        chip.addEventListener("click", function () {
+          this.classList.toggle("active");
+          applyFilters();
+        });
+      });
+
+      // Search button click
+      document
+        .getElementById("search-btn")
+        .addEventListener("click", function () {
+          performSearch();
+        });
+
+      // Enter key in search input
+      document
+        .getElementById("search_location")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            performSearch();
+          }
+        });
+
+      // Radius select change
+      document
+        .getElementById("radius_select")
+        .addEventListener("change", function () {
+          const radius = parseInt(this.value);
+          fetchNearbyStations(
+            window.userLocation.lat,
+            window.userLocation.lng,
+            radius
+          );
+        });
+    }
+
+    /**
+     * Perform search with geocoding
+     */
+    function performSearch() {
+      const searchInput = document.getElementById("search_location");
+      const searchText = searchInput.value.trim();
+
+      if (!searchText) {
+        M.toast({
+          html: "Please enter a location to search",
+          classes: "orange",
+        });
+        return;
+      }
+
+      // Show loading toast
+      M.toast({ html: `Searching for "${searchText}"...`, classes: "blue" });
+
+      // Geocode using Nominatim
+      fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchText
+        )}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.length === 0) {
+            throw new Error("Location not found");
+          }
+
+          // Get first result
+          const location = data[0];
+          const lat = parseFloat(location.lat);
+          const lng = parseFloat(location.lon);
+
+          // Move map to location
+          window.map.setView([lat, lng], 14);
+
+          // Fetch stations near this location
+          fetchNearbyStations(lat, lng);
+
+          // Add search marker
+          if (window.searchMarker) {
+            window.map.removeLayer(window.searchMarker);
+          }
+
+          window.searchMarker = L.marker([lat, lng], {
+            icon: L.divIcon({
+              className: "search-marker",
+              html: '<div style="background-color:#ff4081; border-radius:50%; width:16px; height:16px; border:3px solid white;"></div>',
+              iconSize: [16, 16],
+            }),
+          }).addTo(window.map);
+
+          window.searchMarker
+            .bindPopup(`Search result: ${location.display_name}`)
+            .openPopup();
+        })
+        .catch((error) => {
+          console.error("Search error:", error);
+          M.toast({
+            html: error.message || "Error finding location",
+            classes: "red",
+          });
+        });
+    }
+
+    /**
+     * Fetch nearby charging stations
+     * @param {number} lat - Latitude coordinate
+     * @param {number} lng - Longitude coordinate
+     * @param {number} radius - Search radius in kilometers (optional)
+     */
+    function fetchNearbyStations(lat, lng, radius = 10) {
+      // Show loading state
+      document.getElementById("station-list").innerHTML = `
+    <li class="collection-item center-align">
+      <div class="preloader-wrapper small active">
+        <div class="spinner-layer spinner-green-only">
+          <div class="circle-clipper left"><div class="circle"></div></div>
+          <div class="gap-patch"><div class="circle"></div></div>
+          <div class="circle-clipper right"><div class="circle"></div></div>
+        </div>
+      </div>
+      <p>Loading stations...</p>
+    </li>
+  `;
+
+      // Attempt to fetch from the API
+      fetch(`/api/stations/nearby?lat=${lat}&lng=${lng}&radius=${radius}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+          return response.json();
+        })
+        .then((stations) => {
+          console.log("Stations loaded:", stations.length);
+
+          // Store stations globally
+          window.stations = stations;
+
+          // Update station count
+          document.getElementById("station-count").textContent =
+            stations.length;
+
+          // Add markers to map
+          addStationMarkers(stations);
+
+          // Update station list
+          updateStationList(stations);
+        })
+        .catch((error) => {
+          console.error("Error fetching stations:", error);
+
+          // Use sample data as fallback
+          console.log("Using sample data as fallback");
+          const sampleStations = getSampleStations(lat, lng);
+
+          // Store stations globally
+          window.stations = sampleStations;
+
+          // Update station count
+          document.getElementById("station-count").textContent =
+            sampleStations.length;
+
+          // Add markers to map
+          addStationMarkers(sampleStations);
+
+          // Update station list
+          updateStationList(sampleStations);
+        });
+    }
+
+    /**
+     * Add station markers to map
+     * @param {Array} stations - Array of station objects
+     */
+    function addStationMarkers(stations) {
+      // Clear any existing markers except the user marker
+      if (window.stationMarkers) {
+        window.stationMarkers.forEach((marker) =>
+          window.map.removeLayer(marker)
+        );
+      }
+
+      // Initialize markers array
+      window.stationMarkers = [];
+
+      // Add markers for each station
+      stations.forEach((station) => {
+        // Skip if no location data
+        if (!station.location || !station.location.coordinates) return;
+
+        // Extract coordinates (API returns [lng, lat])
+        const coordinates = station.location.coordinates;
+        const lat = coordinates[1];
+        const lng = coordinates[0];
+
+        // Determine marker color based on status
+        const statusColor = getStatusColor(station.status);
+
+        // Create marker
+        // In your addStationMarkers function
+        const marker = L.marker([lat, lng], {
+          icon: L.divIcon({
+            className: `station-marker ${statusColor}-marker`,
+            html: `<div style="background-color:${statusColor}; border-radius:50%; padding: 2px; border: 2px solid white; display: flex; align-items: center; justify-content: center;">
+            <i class="material-icons" style="color: white; font-size: 16px;">ev_station</i>
+           </div>`,
+            iconSize: [24, 24],
+          }),
+        }).addTo(window.map);
+        // Store station ID with marker for filtering
+        marker._stationId = station._id;
+
+        // Add popup with station info
+        marker.bindPopup(createStationPopup(station, lat, lng));
+
+        // Store marker reference
+        window.stationMarkers.push(marker);
+      });
+    }
+
+    /**
+     * Create station popup HTML
+     * @param {Object} station - Station data
+     * @param {number} lat - Station latitude
+     * @param {number} lng - Station longitude
+     * @returns {string} Popup HTML
+     */
+    function createStationPopup(station, lat, lng) {
+      // Get connector info
+      const connectors = station.connectors || [];
+      const availablePoints = connectors.reduce(
+        (sum, c) => sum + (c.available || 0),
+        0
+      );
+      const totalPoints = connectors.reduce(
+        (sum, c) => sum + (c.count || 0),
+        0
+      );
+
+      // Get status color and text
+      const statusColor = getStatusColor(station.status);
+      const statusText = getStatusText(
+        station.status,
+        availablePoints,
+        totalPoints
+      );
+
+      // Calculate distance
+      const distance = calculateDistance(
+        lat,
+        lng,
+        window.userLocation.lat,
+        window.userLocation.lng
+      );
+
+      // Create popup HTML
+      return `
+    <div class="popup-content">
+      <h6>${station.name}</h6>
+      <p>${station.address}</p>
+      <p>${distance} km away</p>
+      <p class="${statusColor}-text">
+        <i class="material-icons tiny">circle</i> 
+        ${statusText}
+      </p>
+      <button class="btn-small waves-effect waves-light view-details" 
+              onclick="showStationDetails('${station._id}')">
+        <i class="material-icons left">info</i>Details
+      </button>
+    </div>
+  `;
+    }
+
+    /**
+     * Update station list
+     * @param {Array} stations - Array of station objects
+     */
+    function updateStationList(stations) {
+      const stationList = document.getElementById("station-list");
+      if (!stationList) return;
+
+      // Clear existing list
+      stationList.innerHTML = "";
+
+      // Check if there are any stations
+      if (stations.length === 0) {
+        stationList.innerHTML = `
+      <li class="collection-item center-align">
+        <p>No stations found in this area.</p>
+      </li>
+    `;
+        return;
+      }
+
+      // Add each station to list
+      stations.forEach((station) => {
+        // Get connector info
+        const connectors = station.connectors || [];
+        const availablePoints = connectors.reduce(
+          (sum, c) => sum + (c.available || 0),
+          0
+        );
+        const totalPoints = connectors.reduce(
+          (sum, c) => sum + (c.count || 0),
+          0
+        );
+
+        // Get status color and text
+        const statusColor = getStatusColor(station.status);
+        const statusText = getStatusText(
+          station.status,
+          availablePoints,
+          totalPoints
+        );
+
+        // Calculate distance
+        const coordinates = station.location?.coordinates || [0, 0];
+        const distance = calculateDistance(
+          coordinates[1],
+          coordinates[0],
+          window.userLocation.lat,
+          window.userLocation.lng
+        );
+
+        // Create list item
+        const li = document.createElement("li");
+        li.className = "collection-item avatar";
+        li.setAttribute("data-station-id", station._id);
+        li.innerHTML = `
+      <i class="material-icons circle ${statusColor}">ev_station</i>
+      <span class="title"><strong>${station.name}</strong></span>
+      <p>${distance} km away<br>
+        <span class="${statusColor}-text">
+          <i class="material-icons tiny">circle</i> ${statusText}
+        </span>
+      </p>
+      <div class="secondary-content">
+        <a href="#!" class="btn-floating btn-small waves-effect waves-light station-details" data-station-id="${station._id}">
+          <i class="material-icons">info</i>
+        </a>
+      </div>
+    `;
+
+        // Add click event for station details
+        li.querySelector(".station-details").addEventListener(
+          "click",
+          function () {
+            showStationDetails(station._id);
+          }
+        );
+
+        // Add to list
+        stationList.appendChild(li);
+      });
+    }
+
+    /**
+     * Apply filters based on active filter chips
+     */
+    function applyFilters() {
+      // Get all active filters
+      const activeFilters = [];
+      document.querySelectorAll(".filter-chip.active").forEach((chip) => {
+        activeFilters.push(chip.getAttribute("data-filter"));
+      });
+
+      console.log("Active filters:", activeFilters);
+
+      // If no active filters, show all stations
+      if (activeFilters.length === 0) {
+        // Show all stations on the map
+        window.stations.forEach((station) => {
+          const marker = window.stationMarkers.find(
+            (m) => m._stationId === station._id
+          );
+          if (marker) marker.addTo(window.map);
+        });
+
+        // Show all stations in the list
+        document.querySelectorAll("#station-list li").forEach((item) => {
+          item.style.display = "block";
+        });
+
+        // Update count
+        document.getElementById("station-count").textContent =
+          window.stations.length;
+
+        return;
+      }
+
+      // Filter stations based on active filters
+      window.stations.forEach((station) => {
+        let matchesFilter = false;
+
+        // Check if station matches any active filter
+        for (const filter of activeFilters) {
+          switch (filter) {
+            case "fast":
+              if (
+                station.connectors &&
+                station.connectors.some((c) => c.power >= 50)
+              ) {
+                matchesFilter = true;
+              }
+              break;
+            case "free":
+              if (station.cost === "$0.00/kWh" || station.cost === "Free") {
+                matchesFilter = true;
+              }
+              break;
+            case "ccs":
+              if (
+                station.connectors &&
+                station.connectors.some((c) => c.type === "CCS")
+              ) {
+                matchesFilter = true;
+              }
+              break;
+            case "chademo":
+              if (
+                station.connectors &&
+                station.connectors.some((c) => c.type === "CHAdeMO")
+              ) {
+                matchesFilter = true;
+              }
+              break;
+            case "type2":
+              if (
+                station.connectors &&
+                station.connectors.some((c) => c.type === "Type2")
+              ) {
+                matchesFilter = true;
+              }
+              break;
+            case "available":
+              if (station.status === "available") {
+                matchesFilter = true;
+              }
+              break;
+          }
+
+          // If matches any filter, no need to check others
+          if (matchesFilter) break;
+        }
+
+        // Show/hide station based on filter match
+        const marker = window.stationMarkers.find(
+          (m) => m._stationId === station._id
+        );
+
+        if (marker) {
+          if (matchesFilter) {
+            marker.addTo(window.map);
+          } else {
+            marker.remove();
+          }
+        }
+
+        // Show/hide in list
+        const listItem = document.querySelector(
+          `#station-list li[data-station-id="${station._id}"]`
+        );
+        if (listItem) {
+          listItem.style.display = matchesFilter ? "block" : "none";
+        }
+      });
+
+      // Update visible count
+      updateVisibleCount();
+    }
+
+    /**
+     * Update the visible station count
+     */
+    function updateVisibleCount() {
+      const visibleCount = document.querySelectorAll(
+        '#station-list li[style="display: block;"]'
+      ).length;
+      document.getElementById("station-count").textContent = visibleCount;
+    }
+
+    /**
+     * Show station details modal
+     * @param {string} stationId - Station ID
+     */
+    function showStationDetails(stationId) {
+      // Find station in global stations array
+      const station = window.stations.find((s) => s._id === stationId);
+      if (!station) {
+        console.error("Station not found:", stationId);
+        return;
+      }
+
+      // Check if modal already exists
+      const modalId = `station-modal-${stationId}`;
+      let modal = document.getElementById(modalId);
+
+      if (!modal) {
+        // Create modal element
+        modal = document.createElement("div");
+        modal.id = modalId;
+        modal.className = "modal modal-fixed-footer";
+
+        // Get connector info
+        const connectors = station.connectors || [];
+        const connectorsList = connectors
+          .map(
+            (c) =>
+              `<div class="chip">${c.type} - ${c.power}kW (${c.available}/${c.count})</div>`
+          )
+          .join("");
+
+        // Get amenities list
+        const amenitiesList = [];
+        const amenities = station.amenities || {};
+        if (amenities.restroom)
+          amenitiesList.push(
+            '<div class="chip"><i class="material-icons left">wc</i>Restroom</div>'
+          );
+        if (amenities.food)
+          amenitiesList.push(
+            '<div class="chip"><i class="material-icons left">local_cafe</i>Food</div>'
+          );
+        if (amenities.wifi)
+          amenitiesList.push(
+            '<div class="chip"><i class="material-icons left">wifi</i>WiFi</div>'
+          );
+        if (amenities.shopping)
+          amenitiesList.push(
+            '<div class="chip"><i class="material-icons left">shopping_cart</i>Shopping</div>'
+          );
+
+        // Create modal content
+        modal.innerHTML = `
+          <div class="modal-content">
+            <h4>${station.name}</h4>
+            
+            <div class="row">
+              <div class="col s12">
+                <!-- Station Details -->
+                <div class="section">
+                  <h5>Details</h5>
+                  <div class="row">
+                    <div class="col s12 m6">
+                      <p><i class="material-icons tiny">location_on</i> <strong>Address:</strong> ${
+                        station.address
+                      }</p>
+                      <p><i class="material-icons tiny">access_time</i> <strong>Hours:</strong> 24/7</p>
+                      <p><i class="material-icons tiny">attach_money</i> <strong>Cost:</strong> ${
+                        station.cost || "Not specified"
+                      }</p>
+                      <p><i class="material-icons tiny">power</i> <strong>Connector Types:</strong></p>
+                      <div>${
+                        connectorsList || "No connector information available"
+                      }</div>
+                    </div>
+                    <div class="col s12 m6">
+                      <p><i class="material-icons tiny">speed</i> <strong>Power:</strong> Up to ${Math.max(
+                        ...(connectors.map((c) => c.power) || [0])
+                      )} kW</p>
+                      <p><i class="material-icons tiny">business</i> <strong>Network:</strong> ${
+                        station.network || "Not specified"
+                      }</p>
+                      <p><i class="material-icons tiny">today</i> <strong>Last Updated:</strong> ${new Date(
+                        station.lastUpdated
+                      ).toLocaleString()}</p>
+                      <p><i class="material-icons tiny">star</i> <strong>Rating:</strong> ${
+                        station.averageRating || "No ratings"
+                      }/5</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Amenities -->
+                <div class="section">
+                  <h5>Amenities</h5>
+                  ${
+                    amenitiesList.length > 0
+                      ? amenitiesList.join("")
+                      : "No amenities listed"
+                  }
+                </div>
+                
+                <!-- Map Preview -->
+                <div class="section">
+                  <h5>Location</h5>
+                  <div id="modal-map-${stationId}" style="height: 200px; width: 100%; border-radius: 4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-light btn-flat">Close</a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${
+              station.location.coordinates[1]
+            },${station.location.coordinates[0]}" 
+               class="waves-effect waves-light btn" target="_blank">
+              <i class="material-icons left">directions</i>Navigate
+            </a>
+            <a href="#!" class="waves-effect waves-light btn save-station" data-station-id="${
+              station._id
+            }">
+              <i class="material-icons left">bookmark</i>Save
+            </a>
+          </div>
+        `;
+
+        // Add modal to document
+        document.body.appendChild(modal);
+
+        // Initialize modal
+        M.Modal.init(modal);
+      }
+
+      // Open modal
+      const modalInstance = M.Modal.getInstance(modal);
+      modalInstance.open();
+
+      // Create mini map inside modal after it's open
+      setTimeout(() => {
+        const miniMap = L.map(`modal-map-${stationId}`).setView(
+          [station.location.coordinates[1], station.location.coordinates[0]],
+          15
+        );
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+        }).addTo(miniMap);
+
+        L.marker([
+          station.location.coordinates[1],
+          station.location.coordinates[0],
+        ])
+          .addTo(miniMap)
+          .bindPopup(station.name);
+
+        // Handle save button click
+        modal
+          .querySelector(".save-station")
+          .addEventListener("click", function () {
+            saveStation(station._id);
+          });
+      }, 300);
+    }
+
+    /**
+     * Save a station to favorites
+     * @param {string} stationId - Station ID
+     */
+    function saveStation(stationId) {
+      // This would connect to your backend in a real implementation
+      M.toast({ html: "Station saved to favorites (demo)", classes: "green" });
+
+      // For now, just save to localStorage as a demo
+      const savedStations = JSON.parse(
+        localStorage.getItem("savedStations") || "[]"
+      );
+      if (!savedStations.includes(stationId)) {
+        savedStations.push(stationId);
+        localStorage.setItem("savedStations", JSON.stringify(savedStations));
+      }
+    }
+
+    /**
+     * Get color based on station status
+     * @param {string} status - Station status
+     * @returns {string} Color name
+     */
+    function getStatusColor(status) {
+      switch (status) {
+        case "available":
+          return "green";
+        case "busy":
+          return "orange";
+        default:
+          return "red";
+      }
+    }
+
+    /**
+     * Get status text with availability info
+     * @param {string} status - Station status
+     * @param {number} available - Available connectors
+     * @param {number} total - Total connectors
+     * @returns {string} Status text
+     */
+    function getStatusText(status, available, total) {
+      switch (status) {
+        case "available":
+          return `Available (${available}/${total})`;
+        case "busy":
+          return `Busy (${available}/${total})`;
+        default:
+          return "Offline";
+      }
+    }
+
+    /**
+     * Calculate distance between two coordinates
+     * @param {number} lat1 - First latitude
+     * @param {number} lng1 - First longitude
+     * @param {number} lat2 - Second latitude
+     * @param {number} lng2 - Second longitude
+     * @returns {string} Distance in km
+     */
+    function calculateDistance(lat1, lng1, lat2, lng2) {
+      // If coordinates are the same, return 0
+      if (lat1 === lat2 && lng1 === lng2) return "0.0";
+
+      // Convert to radians
+      const radLat1 = (Math.PI * lat1) / 180;
+      const radLat2 = (Math.PI * lat2) / 180;
+      const theta = lng1 - lng2;
+      const radTheta = (Math.PI * theta) / 180;
+
+      // Calculate distance
+      let dist =
+        Math.sin(radLat1) * Math.sin(radLat2) +
+        Math.cos(radLat1) * Math.cos(radLat2) * Math.cos(radTheta);
+      dist = Math.min(dist, 1); // Avoid NaN
+      dist = Math.acos(dist);
+      dist = (dist * 180) / Math.PI;
+      dist = dist * 60 * 1.1515 * 1.609344; // Convert to km
+
+      return dist.toFixed(1);
+    }
+
+    /**
+     * Get sample station data (fallback)
+     * @param {number} lat - Center latitude
+     * @param {number} lng - Center longitude
+     * @returns {Array} Sample stations
+     */
+    function getSampleStations(lat, lng) {
+      return [
+        {
+          _id: "1",
+          name: "Central City Charging",
+          address: "123 Main St, Downtown",
+          location: {
+            type: "Point",
+            coordinates: [lng + 0.01, lat + 0.01],
+          },
+          connectors: [
+            { type: "CCS", power: 150, count: 4, available: 3 },
+            { type: "CHAdeMO", power: 50, count: 2, available: 1 },
+          ],
+          network: "ChargeCo",
+          status: "available",
+          cost: "$0.35/kWh",
+          averageRating: 4.5,
+          lastUpdated: new Date(),
+          amenities: {
+            restroom: true,
+            food: true,
+            wifi: true,
+            shopping: false,
+          },
+        },
+        {
+          _id: "2",
+          name: "Westside Mall Charging",
+          address: "456 Market Ave, Westside",
+          location: {
+            type: "Point",
+            coordinates: [lng - 0.01, lat + 0.005],
+          },
+          connectors: [
+            { type: "CCS", power: 50, count: 4, available: 1 },
+            { type: "Type2", power: 22, count: 3, available: 0 },
+          ],
+          network: "EVgo",
+          status: "busy",
+          cost: "$0.40/kWh",
+          averageRating: 3.8,
+          lastUpdated: new Date(),
+          amenities: {
+            restroom: true,
+            food: true,
+            wifi: true,
+            shopping: true,
+          },
+        },
+        {
+          _id: "3",
+          name: "Eastside Parking Chargers",
+          address: "789 East St, Eastside",
+          location: {
+            type: "Point",
+            coordinates: [lng + 0.02, lat - 0.01],
+          },
+          connectors: [
+            { type: "CCS", power: 50, count: 2, available: 0 },
+            { type: "Type2", power: 22, count: 4, available: 0 },
+          ],
+          network: "ChargePoint",
+          status: "offline",
+          cost: "$0.30/kWh",
+          averageRating: 3.2,
+          lastUpdated: new Date(),
+          amenities: {
+            restroom: false,
+            food: false,
+            wifi: false,
+            shopping: false,
+          },
+        },
+        {
+          _id: "4",
+          name: "North District Superchargers",
+          address: "321 North Blvd, Northside",
+          location: {
+            type: "Point",
+            coordinates: [lng - 0.005, lat + 0.02],
+          },
+          connectors: [{ type: "Tesla", power: 250, count: 10, available: 8 }],
+          network: "Tesla",
+          status: "available",
+          cost: "$0.28/kWh",
+          averageRating: 4.8,
+          lastUpdated: new Date(),
+          amenities: {
+            restroom: true,
+            food: false,
+            wifi: true,
+            shopping: false,
+          },
+        },
+        {
+          _id: "5",
+          name: "South Plaza Charging Hub",
+          address: "987 South Ave, Southside",
+          location: {
+            type: "Point",
+            coordinates: [lng + 0.008, lat - 0.02],
+          },
+          connectors: [
+            { type: "CCS", power: 150, count: 3, available: 2 },
+            { type: "CHAdeMO", power: 100, count: 2, available: 1 },
+          ],
+          network: "EVgo",
+          status: "available",
+          cost: "$0.32/kWh",
+          averageRating: 4.2,
+          lastUpdated: new Date(),
+          amenities: {
+            restroom: true,
+            food: true,
+            wifi: true,
+            shopping: true,
+          },
+        },
+      ];
+    }
+  };
+
+  // Make functions available globally
+  window.showStationDetails = showStationDetails;
+</script>
+
+<%- include('./partials/footer') %>

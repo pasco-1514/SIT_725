@@ -1,0 +1,227 @@
+<!-- Navigation Bar -->
+<nav>
+  <div class="nav-wrapper">
+    <a href="/" class="brand-logo">
+      <i class="material-icons left">ev_station</i>Locate a Socket
+    </a>
+    <a href="#" data-target="mobile-nav" class="sidenav-trigger">
+      <i class="material-icons">menu</i>
+    </a>
+    <ul class="right hide-on-med-and-down">
+      <li>
+        <a href="/" class="<%= (title.includes('Home')) ? 'active' : '' %>">
+          <i class="material-icons left">home</i>Home
+        </a>
+      </li>
+      <li>
+        <a
+          href="/map"
+          class="<%= (title.includes('Find Charging')) ? 'active' : '' %>"
+        >
+          <i class="material-icons left">map</i>Find Stations
+        </a>
+      </li>
+      <li>
+        <a
+          href="/route"
+          class="<%= (title.includes('Plan Your Route')) ? 'active' : '' %>"
+        >
+          <i class="material-icons left">route</i>Plan Route
+        </a>
+      </li>
+      <% if (user) { %>
+      <li>
+        <a class="dropdown-trigger" href="#!" data-target="user-dropdown">
+          <i class="material-icons left">account_circle</i><%= user.name %><i
+            class="material-icons right"
+            >arrow_drop_down</i
+          >
+        </a>
+      </li>
+      <% } else { %>
+      <li>
+        <a href="#login-modal" class="modal-trigger">
+          <i class="material-icons left">login</i>Login
+        </a>
+      </li>
+      <li>
+        <a href="#signup-modal" class="modal-trigger">
+          <i class="material-icons left">person_add</i>Sign Up
+        </a>
+      </li>
+      <% } %>
+    </ul>
+  </div>
+</nav>
+
+<!-- Mobile Navigation -->
+<ul class="sidenav" id="mobile-nav">
+  <li>
+    <div class="user-view">
+      <div class="background primary-color"></div>
+      <a href="#user"
+        ><i class="material-icons large white-text">ev_station</i></a
+      >
+      <a href="#name"><span class="white-text name">Locate a Socket</span></a>
+      <a href="#email"
+        ><span class="white-text email">Find charging stations easily</span></a
+      >
+    </div>
+  </li>
+  <li>
+    <a href="/"> <i class="material-icons">home</i>Home </a>
+  </li>
+  <li>
+    <a href="/map"> <i class="material-icons">map</i>Find Stations </a>
+  </li>
+  <li>
+    <a href="/route"> <i class="material-icons">route</i>Plan Route </a>
+  </li>
+  <li><div class="divider"></div></li>
+  <% if (user) { %>
+  <li>
+    <a href="/profile">
+      <i class="material-icons">account_circle</i>My Profile
+    </a>
+  </li>
+  <li>
+    <a href="/favorites"> <i class="material-icons">favorite</i>Favorites </a>
+  </li>
+  <li>
+    <a href="/history"> <i class="material-icons">history</i>History </a>
+  </li>
+  <li>
+    <a href="/logout"> <i class="material-icons">exit_to_app</i>Logout </a>
+  </li>
+  <% } else { %>
+  <li>
+    <a href="#login-modal" class="modal-trigger">
+      <i class="material-icons">login</i>Login
+    </a>
+  </li>
+  <li>
+    <a href="#signup-modal" class="modal-trigger">
+      <i class="material-icons">person_add</i>Sign Up
+    </a>
+  </li>
+  <% } %>
+</ul>
+
+<!-- User Dropdown Menu -->
+<% if (user) { %>
+<ul id="user-dropdown" class="dropdown-content">
+  <li>
+    <a href="/profile">
+      <i class="material-icons">account_circle</i>My Profile
+    </a>
+  </li>
+  <li>
+    <a href="/favorites"> <i class="material-icons">favorite</i>Favorites </a>
+  </li>
+  <li>
+    <a href="/history"> <i class="material-icons">history</i>History </a>
+  </li>
+  <li class="divider"></li>
+  <li>
+    <a href="/logout"> <i class="material-icons">exit_to_app</i>Logout </a>
+  </li>
+</ul>
+<% } %>
+
+<!-- Login Modal -->
+<div id="login-modal" class="modal">
+  <div class="modal-content">
+    <h4>Login</h4>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">email</i>
+            <input id="email" type="email" class="validate" required />
+            <label for="email">Email</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">lock</i>
+            <input id="password" type="password" class="validate" required />
+            <label for="password">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s12">
+            <label>
+              <input type="checkbox" />
+              <span>Remember me</span>
+            </label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-light btn-flat"
+      >Cancel</a
+    >
+    <a href="#!" class="waves-effect waves-light btn primary-color">Login</a>
+  </div>
+</div>
+
+<!-- Signup Modal -->
+<div id="signup-modal" class="modal">
+  <div class="modal-content">
+    <h4>Create Account</h4>
+    <div class="row">
+      <form class="col s12">
+        <div class="row">
+          <div class="input-field col s6">
+            <i class="material-icons prefix">person</i>
+            <input id="first_name" type="text" class="validate" required />
+            <label for="first_name">First Name</label>
+          </div>
+          <div class="input-field col s6">
+            <input id="last_name" type="text" class="validate" required />
+            <label for="last_name">Last Name</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">email</i>
+            <input id="signup_email" type="email" class="validate" required />
+            <label for="signup_email">Email</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">lock</i>
+            <input
+              id="signup_password"
+              type="password"
+              class="validate"
+              required
+            />
+            <label for="signup_password">Password</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <i class="material-icons prefix">lock_outline</i>
+            <input
+              id="confirm_password"
+              type="password"
+              class="validate"
+              required
+            />
+            <label for="confirm_password">Confirm Password</label>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a href="#!" class="modal-close waves-effect waves-light btn-flat"
+      >Cancel</a
+    >
+    <a href="#!" class="waves-effect waves-light btn primary-color">Sign Up</a>
+  </div>
+</div>

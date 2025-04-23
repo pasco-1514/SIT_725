@@ -1,0 +1,14 @@
+{
+  "name": "sit725-task-1-4p",
+  "version": "1.0.0",
+  "description": "Basic programming demonstration for SIT725",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Pascaline Jepkemboi",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

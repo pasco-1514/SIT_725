@@ -1,0 +1,77 @@
+<!-- Station Card Component -->
+<div class="card station-card hoverable">
+  <div class="card-content">
+    <span class="card-title">
+      <% if (station.status === 'available') { %>
+      <i class="material-icons circle green left">ev_station</i>
+      <% } else if (station.status === 'busy') { %>
+      <i class="material-icons circle orange left">ev_station</i>
+      <% } else { %>
+      <i class="material-icons circle red left">ev_station</i>
+      <% } %> <%= station.name %>
+    </span>
+
+    <div class="section">
+      <p>
+        <i class="material-icons tiny">location_on</i>
+        <span><%= station.address %></span>
+      </p>
+      <p>
+        <i class="material-icons tiny">speed</i>
+        <span><%= station.power %> kW</span>
+      </p>
+      <p>
+        <i class="material-icons tiny">attach_money</i>
+        <span><%= station.cost %></span>
+      </p>
+
+      <% if (station.status === 'available') { %>
+      <p class="status-available">
+        <i class="material-icons tiny">circle</i>
+        Available (<%= station.availablePoints %>/<%= station.totalPoints %>)
+      </p>
+      <% } else if (station.status === 'busy') { %>
+      <p class="status-busy">
+        <i class="material-icons tiny">circle</i>
+        Busy (<%= station.availablePoints %>/<%= station.totalPoints %>)
+      </p>
+      <% } else { %>
+      <p class="status-offline">
+        <i class="material-icons tiny">circle</i>
+        Offline
+      </p>
+      <% } %>
+    </div>
+
+    <div class="section">
+      <div class="chip" title="Distance">
+        <i class="material-icons left">near_me</i>
+        <%= station.distance %> km
+      </div>
+
+      <% station.connectors.forEach(function(connector) { %>
+      <div class="chip" title="Connector Type">
+        <i class="material-icons left">power</i>
+        <%= connector %>
+      </div>
+      <% }); %> <% if (station.hasWifi) { %>
+      <div class="chip" title="WiFi Available">
+        <i class="material-icons left">wifi</i>
+        WiFi
+      </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="card-action">
+    <a href="#station-modal-<%= station.id %>" class="modal-trigger">
+      <i class="material-icons left">info</i>Details
+    </a>
+    <a href="#!" class="right">
+      <i class="material-icons">directions</i>
+    </a>
+    <a href="#!" class="right" style="margin-right: 10px">
+      <i class="material-icons">bookmark_border</i>
+    </a>
+  </div>
+</div>

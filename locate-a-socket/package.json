@@ -1,0 +1,30 @@
+{
+  "name": "locate-a-socket",
+  "version": "1.0.0",
+  "description": "An EV charging station finder application",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "mocha --timeout 10000 test/**/*.test.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.9",
+    "express": "^4.21.2",
+    "express-session": "^1.17.3",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.2"
+  },
+  "devDependencies": {
+    "chai": "^5.2.0",
+    "mocha": "^11.1.0",
+    "mongodb-memory-server": "^10.1.4",
+    "nodemon": "^3.0.1",
+    "sinon": "^20.0.0",
+    "supertest": "^7.1.0"
+  },
+  "author": "Your Name",
+  "license": "MIT"
+}

@@ -1,0 +1,482 @@
+<%- include('./partials/header') %>
+
+<!-- Route Planning Section -->
+<section class="section">
+  <div class="container">
+    <div class="row">
+      <div class="col s12">
+        <h3>Plan Your Route</h3>
+        <p class="flow-text">
+          Plan your journey with optimal charging stops based on your vehicle's
+          range and preferences.
+        </p>
+      </div>
+    </div>
+
+    <!-- Route Planning Card -->
+    <div class="row">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Route Details</span>
+
+            <div class="row">
+              <!-- Starting Location -->
+              <div class="input-field col s12 m5">
+                <i class="material-icons prefix">location_on</i>
+                <input id="start_location" type="text" class="validate" />
+                <label for="start_location">Starting Location</label>
+              </div>
+
+              <!-- Destination -->
+              <div class="input-field col s12 m5">
+                <i class="material-icons prefix">flag</i>
+                <input id="destination" type="text" class="validate" />
+                <label for="destination">Destination</label>
+              </div>
+
+              <!-- Add Waypoint Button -->
+              <div class="col s12 m2 center-align">
+                <button
+                  class="btn-floating btn-large waves-effect waves-light primary-color tooltipped"
+                  data-position="top"
+                  data-tooltip="Add Waypoint"
+                  style="margin-top: 15px"
+                >
+                  <i class="material-icons">add_location</i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Vehicle and Preferences -->
+            <div class="row">
+              <!-- Vehicle -->
+              <div class="input-field col s12 m4">
+                <select id="vehicle_select">
+                  <option value="" disabled>Select your vehicle</option>
+                  <option value="tesla_model3" selected>
+                    Tesla Model 3 (345 km)
+                  </option>
+                  <option value="nissan_leaf">Nissan Leaf (240 km)</option>
+                  <option value="add_new">+ Add new vehicle</option>
+                </select>
+                <label>Vehicle</label>
+              </div>
+
+              <!-- Current Charge -->
+              <div class="input-field col s12 m4">
+                <p class="range-field">
+                  <label for="current_charge"
+                    >Current Charge: <span id="charge_percent">80</span>%</label
+                  >
+                  <input
+                    type="range"
+                    id="current_charge"
+                    min="0"
+                    max="100"
+                    value="80"
+                  />
+                </p>
+              </div>
+
+              <!-- Min Battery Warning -->
+              <div class="input-field col s12 m4">
+                <p class="range-field">
+                  <label for="min_battery"
+                    >Minimum Battery Alert:
+                    <span id="min_battery_percent">20</span>%</label
+                  >
+                  <input
+                    type="range"
+                    id="min_battery"
+                    min="5"
+                    max="50"
+                    value="20"
+                  />
+                </p>
+              </div>
+            </div>
+
+            <div class="row">
+              <!-- Advanced Options -->
+              <div class="col s12">
+                <div class="collapsible-header">
+                  <i class="material-icons">settings</i>
+                  Advanced Options
+                  <i class="material-icons right">arrow_drop_down</i>
+                </div>
+                <div
+                  class="collapsible-body"
+                  style="
+                    display: none;
+                    padding: 15px;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 4px;
+                    margin-bottom: 15px;
+                  "
+                >
+                  <div class="row">
+                    <!-- Charging Network Preferences -->
+                    <div class="input-field col s12 m6">
+                      <select multiple id="preferred_networks">
+                        <option value="" disabled>
+                          Preferred charging networks
+                        </option>
+                        <option value="chargeco" selected>ChargeCo</option>
+                        <option value="evgo">EVgo</option>
+                        <option value="tesla">Tesla</option>
+                        <option value="chargepoint">ChargePoint</option>
+                      </select>
+                      <label>Preferred Networks</label>
+                    </div>
+
+                    <!-- Charging Speed Preference -->
+                    <div class="input-field col s12 m6">
+                      <select id="speed_preference">
+                        <option value="fastest" selected>
+                          Fastest charging (fewer stops)
+                        </option>
+                        <option value="balanced">
+                          Balanced (time vs. range)
+                        </option>
+                        <option value="economical">
+                          Economical (lowest cost)
+                        </option>
+                      </select>
+                      <label>Charging Preference</label>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <!-- Required Amenities -->
+                    <div class="col s12">
+                      <p>Required Amenities</p>
+                      <div class="amenities-options">
+                        <label style="margin-right: 20px">
+                          <input type="checkbox" class="filled-in" />
+                          <span>Restroom</span>
+                        </label>
+                        <label style="margin-right: 20px">
+                          <input type="checkbox" class="filled-in" />
+                          <span>Food</span>
+                        </label>
+                        <label style="margin-right: 20px">
+                          <input type="checkbox" class="filled-in" />
+                          <span>WiFi</span>
+                        </label>
+                        <label style="margin-right: 20px">
+                          <input type="checkbox" class="filled-in" />
+                          <span>Shopping</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col s12 center-align">
+                <button
+                  class="btn-large waves-effect waves-light primary-color"
+                  id="calculate-route-btn"
+                >
+                  <i class="material-icons left">route</i>Calculate Route
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Route Results (initially hidden) -->
+    <div class="row" id="route-results" style="display: none">
+      <div class="col s12">
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">Route Summary</span>
+
+            <div class="row">
+              <div class="col s12 m4">
+                <div class="center-align">
+                  <i class="material-icons large primary-color-text"
+                    >straighten</i
+                  >
+                  <h5>320 km</h5>
+                  <p>Total Distance</p>
+                </div>
+              </div>
+
+              <div class="col s12 m4">
+                <div class="center-align">
+                  <i class="material-icons large primary-color-text"
+                    >schedule</i
+                  >
+                  <h5>3h 45m</h5>
+                  <p>Driving Time</p>
+                </div>
+              </div>
+
+              <div class="col s12 m4">
+                <div class="center-align">
+                  <i class="material-icons large primary-color-text"
+                    >battery_charging_full</i
+                  >
+                  <h5>2</h5>
+                  <p>Charging Stops</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Route Map -->
+            <div class="row">
+              <div class="col s12">
+                <div
+                  id="route-map-container"
+                  style="height: 300px; background-color: #e0e0e0"
+                >
+                  <!-- Simulated route map will be displayed here -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Route Steps -->
+            <div class="row">
+              <div class="col s12">
+                <h5>Route Details</h5>
+                <ul class="collection">
+                  <!-- Start -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle green">play_arrow</i>
+                    <span class="title"
+                      ><strong>Start: Current Location</strong></span
+                    >
+                    <p>
+                      Battery: 80%<br />
+                      Estimated Range: 276 km
+                    </p>
+                  </li>
+
+                  <!-- Driving Segment 1 -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle blue">directions_car</i>
+                    <span class="title"><strong>Drive 125 km</strong></span>
+                    <p>
+                      1 hour 20 minutes<br />
+                      Battery drops from 80% to 36%
+                    </p>
+                  </li>
+
+                  <!-- Charging Stop 1 -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle primary-color"
+                      >ev_station</i
+                    >
+                    <span class="title"
+                      ><strong>North District Superchargers</strong></span
+                    >
+                    <p>
+                      125 km from start (151 km remaining)<br />
+                      Charge from 36% to 80% (25 minutes)
+                    </p>
+                    <a
+                      href="#!"
+                      class="secondary-content tooltipped"
+                      data-position="left"
+                      data-tooltip="View Station Details"
+                    >
+                      <i class="material-icons">info</i>
+                    </a>
+                  </li>
+
+                  <!-- Driving Segment 2 -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle blue">directions_car</i>
+                    <span class="title"><strong>Drive 100 km</strong></span>
+                    <p>
+                      1 hour 5 minutes<br />
+                      Battery drops from 80% to 45%
+                    </p>
+                  </li>
+
+                  <!-- Charging Stop 2 -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle primary-color"
+                      >ev_station</i
+                    >
+                    <span class="title"
+                      ><strong>South Plaza Charging Hub</strong></span
+                    >
+                    <p>
+                      225 km from start (51 km remaining)<br />
+                      Charge from 45% to 65% (15 minutes)
+                    </p>
+                    <a
+                      href="#!"
+                      class="secondary-content tooltipped"
+                      data-position="left"
+                      data-tooltip="View Station Details"
+                    >
+                      <i class="material-icons">info</i>
+                    </a>
+                  </li>
+
+                  <!-- Final Driving Segment -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle blue">directions_car</i>
+                    <span class="title"><strong>Drive 51 km</strong></span>
+                    <p>
+                      40 minutes<br />
+                      Battery drops from 65% to 40%
+                    </p>
+                  </li>
+
+                  <!-- Destination -->
+                  <li class="collection-item avatar">
+                    <i class="material-icons circle red">flag</i>
+                    <span class="title"
+                      ><strong>Destination: Mountain View Hotel</strong></span
+                    >
+                    <p>
+                      Total trip: 276 km<br />
+                      Arrival battery: 40%
+                    </p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Route Actions -->
+            <div class="row">
+              <div class="col s12 center-align section">
+                <a href="#!" class="btn waves-effect waves-light primary-color">
+                  <i class="material-icons left">navigation</i>Start Navigation
+                </a>
+                <a
+                  href="#!"
+                  class="btn waves-effect waves-light secondary-color"
+                >
+                  <i class="material-icons left">save</i>Save Route
+                </a>
+                <a href="#!" class="btn waves-effect waves-light">
+                  <i class="material-icons left">share</i>Share
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Route Planning JS -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Initialize collapsible for advanced options
+    const collapsible = document.querySelector(".collapsible-header");
+    if (collapsible) {
+      collapsible.addEventListener("click", function () {
+        const content = this.nextElementSibling;
+        if (content.style.display === "none") {
+          content.style.display = "block";
+          this.querySelector("i.right").textContent = "arrow_drop_up";
+        } else {
+          content.style.display = "none";
+          this.querySelector("i.right").textContent = "arrow_drop_down";
+        }
+      });
+    }
+
+    // Update percentage displays
+    const currentCharge = document.getElementById("current_charge");
+    const chargePercentage = document.getElementById("charge_percent");
+    if (currentCharge && chargePercentage) {
+      currentCharge.addEventListener("input", function () {
+        chargePercentage.textContent = this.value;
+      });
+    }
+
+    const minBattery = document.getElementById("min_battery");
+    const minBatteryPercentage = document.getElementById("min_battery_percent");
+    if (minBattery && minBatteryPercentage) {
+      minBattery.addEventListener("input", function () {
+        minBatteryPercentage.textContent = this.value;
+      });
+    }
+
+    // Calculate route button action
+    const calculateButton = document.getElementById("calculate-route-btn");
+    const routeResults = document.getElementById("route-results");
+    if (calculateButton && routeResults) {
+      calculateButton.addEventListener("click", function () {
+        // Show loading indicator
+        this.disabled = true;
+        this.innerHTML =
+          '<i class="material-icons left">hourglass_empty</i>Calculating...';
+
+        // Simulate route calculation delay
+        setTimeout(() => {
+          // Show results
+          routeResults.style.display = "block";
+
+          // Reset button
+          this.disabled = false;
+          this.innerHTML =
+            '<i class="material-icons left">route</i>Recalculate Route';
+
+          // Create simulated route map
+          createSimulatedRouteMap();
+
+          // Scroll to results
+          routeResults.scrollIntoView({ behavior: "smooth" });
+        }, 1500);
+      });
+    }
+
+    // Create simulated route map
+    function createSimulatedRouteMap() {
+      const mapContainer = document.getElementById("route-map-container");
+      if (!mapContainer) return;
+
+      mapContainer.innerHTML = `
+        <div class="map-placeholder" style="height: 100%; background-color: #E0E0E0; position: relative;">
+          <!-- Simulated map grid -->
+          <div style="position: absolute; width: 100%; height: 100%; background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+          
+          <!-- Simulated roads -->
+          <div style="position: absolute; top: 40%; left: 0; width: 100%; height: 3%; background-color: #A0A0A0;"></div>
+          <div style="position: absolute; top: 60%; left: 30%; width: 70%; height: 3%; background-color: #A0A0A0;"></div>
+          
+          <!-- Simulated route -->
+          <div style="position: absolute; top: 38%; left: 5%; width: 25%; height: 4%; background-color: #4CAF50; border-radius: 4px;"></div>
+          <div style="position: absolute; top: 38%; left: 30%; width: 40%; height: 4%; background-color: #4CAF50; border-radius: 4px;"></div>
+          <div style="position: absolute; top: 38%; right: 5%; width: 25%; height: 4%; transform: rotate(45deg); transform-origin: right; background-color: #4CAF50; border-radius: 4px;"></div>
+          
+          <!-- Start marker -->
+          <div style="position: absolute; top: 40%; left: 5%; transform: translate(-50%, -50%);">
+            <i class="material-icons medium green-text">play_arrow</i>
+          </div>
+          
+          <!-- Charging stop 1 -->
+          <div style="position: absolute; top: 40%; left: 30%; transform: translate(-50%, -50%);">
+            <i class="material-icons medium green-text">ev_station</i>
+          </div>
+          
+          <!-- Charging stop 2 -->
+          <div style="position: absolute; top: 40%; left: 70%; transform: translate(-50%, -50%);">
+            <i class="material-icons medium green-text">ev_station</i>
+          </div>
+          
+          <!-- End marker -->
+          <div style="position: absolute; top: 30%; right: 5%; transform: translate(50%, -50%);">
+            <i class="material-icons medium red-text">flag</i>
+          </div>
+        </div>
+      `;
+    }
+  });
+</script>
+
+<%- include('./partials/footer') %>
